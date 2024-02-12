@@ -6,4 +6,5 @@ public class Recipe
     public string Name { get; set; } = null!;
     public Course Course { get; set; }
     public ICollection<Ingredient> Ingredients { get; set; } = null!;
+    public User User { get; set; } = null!;
 }

@@ -1,12 +1,15 @@
 using FluentValidation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Recipes.Core.Application;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddApplication(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
+        serviceCollection.Configure<UserSettings>(configuration.GetRequiredSection("User"));
+        
         serviceCollection.AddSingleton<IIngredientsService, CachedIngredientsService>();
 
         var assemblies = AppDomain.CurrentDomain

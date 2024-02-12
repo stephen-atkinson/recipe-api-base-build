@@ -8,8 +8,8 @@ public class IngredientEntityConfiguration : IEntityTypeConfiguration<Ingredient
 {
     public void Configure(EntityTypeBuilder<Ingredient> builder)
     {
-        builder.HasKey(r => r.Id);
+        builder.HasKey(i => i.Id);
         
-        builder.Property(r => r.Cost).HasPrecision(18, 2);
+        builder.Property(i => i.Cost).HasPrecision(18, 2);
     }
 }

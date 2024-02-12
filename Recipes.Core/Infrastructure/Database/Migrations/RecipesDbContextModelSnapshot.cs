@@ -55,7 +55,7 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
 
                     b.HasIndex("RecipeId");
 
-                    b.ToTable("Ingredient");
+                    b.ToTable("Ingredients");
                 });
 
             modelBuilder.Entity("Recipes.Core.Domain.Recipe", b =>
@@ -71,9 +71,32 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Recipe");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Recipes");
+                });
+
+            modelBuilder.Entity("Recipes.Core.Domain.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Recipes.Core.Domain.Ingredient", b =>
@@ -89,7 +112,23 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("Recipes.Core.Domain.Recipe", b =>
                 {
+                    b.HasOne("Recipes.Core.Domain.User", "User")
+                        .WithMany("Recipes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Recipes.Core.Domain.Recipe", b =>
+                {
                     b.Navigation("Ingredients");
+                });
+
+            modelBuilder.Entity("Recipes.Core.Domain.User", b =>
+                {
+                    b.Navigation("Recipes");
                 });
 #pragma warning restore 612, 618
         }
