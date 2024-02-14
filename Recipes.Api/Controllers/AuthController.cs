@@ -5,6 +5,8 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters.Xml;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Recipes.Core.Application;
@@ -27,12 +29,13 @@ public class AuthController : ControllerBase
     {
         _recipesDbContext = recipesDbContext;
     }
-    
+
     /// <summary>
     /// Authenticate a user.
     /// </summary>
     /// <remarks>Authenticates the user using their username as the credentials.</remarks>
     /// <param name="request">The request's body.</param>
+    /// <param name="cancellationToken">A <see cref="CancellationToken" /> to observe.</param>
     /// <returns>A <see cref="LoginResult"/> that contains an access token.</returns>
     /// <response code="200">The user has successfully authenticated.</response>
     /// <response code="400">The request is invalid.</response>
@@ -41,17 +44,15 @@ public class AuthController : ControllerBase
     [HttpPost]
     [AllowAnonymous]
     [ProducesResponseType(200, Type = typeof(LoginResult))]
-    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(400, Type = typeof(ValidationProblemDetails))]
     [ProducesResponseType(401, Type = typeof(ProblemDetails))]
     [ProducesResponseType(500, Type = typeof(ProblemDetails))]
-    public async Task<IActionResult> Index(LoginRequest request)
+    public async Task<IActionResult> Index(LoginRequest request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.Username))
-        {
-            return BadRequest("The username can't be null or whitespace");
-        }
+        // Request validation removed from base build.
         
-        var user = await _recipesDbContext.Users.SingleOrDefaultAsync(u => u.Username == request.Username);
+        var user = await _recipesDbContext.Users
+            .SingleOrDefaultAsync(u => u.Username == request.Username, cancellationToken);
 
         if (user == null)
         {
