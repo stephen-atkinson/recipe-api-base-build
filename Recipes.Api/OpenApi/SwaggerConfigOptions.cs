@@ -1,3 +1,4 @@
+using System.Reflection;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
@@ -24,6 +25,9 @@ public class SwaggerConfigOptions : IConfigureOptions<SwaggerGenOptions>
                     Version = description.ApiVersion.ToString()
                 });
         }
+        
+        var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         
         var jwtSecurityScheme = new OpenApiSecurityScheme
         {

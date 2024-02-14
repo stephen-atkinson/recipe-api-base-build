@@ -28,11 +28,29 @@ public class AuthController : ControllerBase
         _recipesDbContext = recipesDbContext;
     }
     
+    /// <summary>
+    /// Authenticate a user.
+    /// </summary>
+    /// <remarks>Authenticates the user using their username as the credentials.</remarks>
+    /// <param name="request">The request's body.</param>
+    /// <returns>A <see cref="LoginResult"/> that contains an access token.</returns>
+    /// <response code="200">The user has successfully authenticated.</response>
+    /// <response code="400">The request is invalid.</response>
+    /// <response code="401">The user couldn't be authenticated.</response>
+    /// <response code="500">Oops! Something went wrong.</response>
     [HttpPost]
     [AllowAnonymous]
     [ProducesResponseType(200, Type = typeof(LoginResult))]
-    public async Task<IActionResult> Login(LoginRequest request)
+    [ProducesResponseType(400, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(401, Type = typeof(ProblemDetails))]
+    [ProducesResponseType(500, Type = typeof(ProblemDetails))]
+    public async Task<IActionResult> Index(LoginRequest request)
     {
+        if (string.IsNullOrWhiteSpace(request.Username))
+        {
+            return BadRequest("The username can't be null or whitespace");
+        }
+        
         var user = await _recipesDbContext.Users.SingleOrDefaultAsync(u => u.Username == request.Username);
 
         if (user == null)
@@ -65,12 +83,25 @@ public class AuthController : ControllerBase
 
     public record LoginRequest
     {
+        /// <summary>
+        /// The username of the user to authenticate as.
+        /// </summary>
+        /// <example>joe.bloggs</example>
         public string Username { get; set; } = null!;
     }
 
     private record LoginResult
     {
-        public string Token { get; set; } = null!;
+        /// <summary>
+        /// An access token for the endpoints that require authentication.
+        /// </summary>
+        /// <example>jeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</example>
+        public string Token { get; set; }
+        
+        /// <summary>
+        /// The scheme for the authorization header.
+        /// </summary>
+        /// <example>Bearer</example>
         public string Scheme { get; set; } = null!;
     }
 }
