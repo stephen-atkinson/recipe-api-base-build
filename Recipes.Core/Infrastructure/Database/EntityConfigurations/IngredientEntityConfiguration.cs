@@ -9,7 +9,5 @@ public class IngredientEntityConfiguration : IEntityTypeConfiguration<Ingredient
     public void Configure(EntityTypeBuilder<Ingredient> builder)
     {
         builder.HasKey(i => i.Id);
-        
-        builder.Property(i => i.Cost).HasPrecision(18, 2);
     }
 }
