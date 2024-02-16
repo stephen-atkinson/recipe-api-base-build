@@ -13,6 +13,7 @@ public class WeatherForecastController : ControllerBase
     
     [HttpGet(Name = "GetWeatherForecast")]
     [ProducesResponseType(200, Type = typeof(IEnumerable<WeatherForecast>))]
+    [ProducesResponseType(401)]
     public IActionResult Get()
     {
         var forecast = Enumerable.Range(1, 5).Select(index => new WeatherForecast

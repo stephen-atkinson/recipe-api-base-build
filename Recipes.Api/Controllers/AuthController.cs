@@ -1,15 +1,9 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Asp.Versioning;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters.Xml;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Recipes.Core.Application;
+using Recipes.Api.Models.Requests;
+using Recipes.Api.Models.Results;
+using Recipes.Core.Application.Auth;
 
 namespace Recipes.Api.Controllers;
 
@@ -18,16 +12,15 @@ namespace Recipes.Api.Controllers;
 [ApiVersionNeutral]
 public class AuthController : ControllerBase
 {
-    public const string Issuer = "Recipes.Api";
-    public const string Audience = Issuer;
-    
-    public static readonly SymmetricSecurityKey SigningKey = new (Encoding.UTF8.GetBytes("StoreThisSecurelyInARealWorldApplication"));
-    
-    private readonly IRecipesDbContext _recipesDbContext;
+    private readonly IAuthenticator _authenticator;
+    private readonly IAuthTokenGenerator _authTokenGenerator;
 
-    public AuthController(IRecipesDbContext recipesDbContext)
+    public AuthController(
+        IAuthenticator authenticator,
+        IAuthTokenGenerator authTokenGenerator)
     {
-        _recipesDbContext = recipesDbContext;
+        _authenticator = authenticator;
+        _authTokenGenerator = authTokenGenerator;
     }
 
     /// <summary>
@@ -50,59 +43,22 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Index(LoginRequest request, CancellationToken cancellationToken)
     {
         // Request validation removed from base build.
-        
-        var user = await _recipesDbContext.Users
-            .SingleOrDefaultAsync(u => u.Username == request.Username, cancellationToken);
+
+        var user = await _authenticator.ByUsernameAsync(request.Username, cancellationToken);
 
         if (user == null)
         {
             return Unauthorized();
         }
 
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Audience = Audience,
-            Issuer = Issuer,
-            IssuedAt = DateTime.UtcNow,
-            Expires = DateTime.UtcNow.AddMinutes(5),
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim(ClaimTypes.Name, user.Id.ToString()),
-            }),
-            SigningCredentials = new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha256Signature)
-        };
+        var token = _authTokenGenerator.Create(user);
 
         var result = new LoginResult
         {
-            Token = tokenHandler.CreateEncodedJwt(tokenDescriptor),
-            Scheme = JwtBearerDefaults.AuthenticationScheme
+            Token = token,
+            Scheme = "Bearer"
         };
 
         return Ok(result);
-    }
-
-    public record LoginRequest
-    {
-        /// <summary>
-        /// The username of the user to authenticate as.
-        /// </summary>
-        /// <example>joe.bloggs</example>
-        public string Username { get; set; } = null!;
-    }
-
-    private record LoginResult
-    {
-        /// <summary>
-        /// An access token for the endpoints that require authentication.
-        /// </summary>
-        /// <example>jeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</example>
-        public string Token { get; set; }
-        
-        /// <summary>
-        /// The scheme for the authorization header.
-        /// </summary>
-        /// <example>Bearer</example>
-        public string Scheme { get; set; } = null!;
     }
 }

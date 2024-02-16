@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
-using Recipes.Api.Controllers;
 using Recipes.Api.OpenApi;
 using Recipes.Core.Application;
+using Recipes.Core.Application.Auth;
 using Recipes.Core.Infrastructure;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -16,9 +15,9 @@ builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
-        o.TokenValidationParameters.IssuerSigningKey = AuthController.SigningKey;
-        o.TokenValidationParameters.ValidIssuer = AuthController.Issuer;
-        o.TokenValidationParameters.ValidAudience = AuthController.Audience;
+        o.TokenValidationParameters.IssuerSigningKey = JwtGenerator.SigningKey;
+        o.TokenValidationParameters.ValidIssuer = JwtGenerator.Issuer;
+        o.TokenValidationParameters.ValidAudience = JwtGenerator.Audience;
     });
 
 builder.Services.AddControllers();

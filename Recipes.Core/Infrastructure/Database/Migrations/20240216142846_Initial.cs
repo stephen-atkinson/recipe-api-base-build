@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -28,7 +29,10 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Instructions = table.Column<string>(type: "TEXT", nullable: false),
                     Course = table.Column<int>(type: "INTEGER", nullable: false),
+                    Created = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    LastUpdated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -51,9 +55,8 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                     Quantity = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
-                    Supplier = table.Column<string>(type: "TEXT", nullable: false),
+                    SupplierName = table.Column<string>(type: "TEXT", nullable: false),
                     Category = table.Column<string>(type: "TEXT", nullable: false),
-                    Cost = table.Column<decimal>(type: "TEXT", precision: 18, scale: 2, nullable: false),
                     ExternalId = table.Column<string>(type: "TEXT", nullable: false),
                     RecipeId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
