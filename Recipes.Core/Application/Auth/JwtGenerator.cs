@@ -6,14 +6,16 @@ using Recipes.Core.Domain;
 
 namespace Recipes.Core.Application.Auth;
 
-public class JwtGenerator : IAuthTokenGenerator
+public class JwtGenerator : IAccessTokenGenerator
 {
+    
+    
     public const string Issuer = "Recipes";
     public const string Audience = Issuer;
     
     public static readonly SymmetricSecurityKey SigningKey = new (Encoding.UTF8.GetBytes("StoreThisSecurelyInARealWorldApplication"));
     
-    public string Create(User user)
+    public string Create(ApplicationUser applicationUser)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         
@@ -25,7 +27,7 @@ public class JwtGenerator : IAuthTokenGenerator
             Expires = DateTime.UtcNow.AddMinutes(5),
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.Name, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, applicationUser.Id),
             }),
             SigningCredentials = new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha256Signature)
         };

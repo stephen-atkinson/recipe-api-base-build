@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
-using Recipes.Api.OpenApi;
+using Recipes.Api.Options;
 using Recipes.Core.Application;
-using Recipes.Core.Application.Auth;
 using Recipes.Core.Infrastructure;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,19 +10,18 @@ builder.Services.AddApplication(builder.Configuration);
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(o =>
-    {
-        o.TokenValidationParameters.IssuerSigningKey = JwtGenerator.SigningKey;
-        o.TokenValidationParameters.ValidIssuer = JwtGenerator.Issuer;
-        o.TokenValidationParameters.ValidAudience = JwtGenerator.Audience;
-    });
+    .AddJwtBearer()
+    .Services
+    .ConfigureOptions<JwtConfigOptions>();
 
 builder.Services.AddControllers();
 
 builder.Services.Configure<RouteOptions>(o => { o.LowercaseUrls = true; });
 
-builder.Services.AddSwaggerGen();
-builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, SwaggerConfigOptions>();
+builder.Services.AddSwaggerGen()
+    .ConfigureOptions<SwaggerConfigOptions>()
+    .ConfigureOptions<SwaggerUiConfigOptions>();
+
 builder.Services.AddApiVersioning(opt =>
 {
     opt.AssumeDefaultVersionWhenUnspecified = true;
@@ -43,18 +39,7 @@ await app.SeedUsers();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        var descriptions = app.DescribeApiVersions();
-
-        // build a swagger endpoint for each discovered API version
-        foreach (var description in descriptions)
-        {
-            var url = $"/swagger/{description.GroupName}/swagger.json";
-            var name = description.GroupName.ToUpperInvariant();
-            options.SwaggerEndpoint(url, name);
-        }
-    });
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

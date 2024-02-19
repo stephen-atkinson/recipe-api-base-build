@@ -9,10 +9,10 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        serviceCollection.AddScoped<IAuthenticator, Authenticator>();
-        serviceCollection.AddSingleton<IAuthTokenGenerator, JwtGenerator>();
-        
         serviceCollection.Configure<UserSettings>(configuration.GetRequiredSection("User"));
+        serviceCollection.Configure<JwtSettings>(configuration.GetRequiredSection("Jwt"));
+        
+        serviceCollection.AddSingleton<IAccessTokenGenerator, JwtGenerator>();
         
         serviceCollection.AddSingleton<IIngredientsService, CachedIngredientsService>();
 

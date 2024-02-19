@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -11,31 +11,16 @@ public static class HostExtensions
     public static async Task SeedUsers(this IHost host)
     {
         await using var scope = host.Services.CreateAsyncScope();
+
+        var aspNetUserManager = scope.ServiceProvider.GetRequiredService<AspNetUserManager<ApplicationUser>>();
         
-        var dbContext = scope.ServiceProvider.GetRequiredService<IRecipesDbContext>();
         var userOptions = scope.ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
-        var users = await dbContext.Users
-            .Where(u => userOptions.Value.DefaultUsers.Contains(u.Username))
-            .ToArrayAsync();
-
-        foreach (var username in userOptions.Value.DefaultUsers)
+        foreach (var defaultUser in userOptions.Value.DefaultUsers)
         {
-            var user = users.FirstOrDefault(u => u.Username.Equals(username, StringComparison.InvariantCultureIgnoreCase));
+            var user = new ApplicationUser { UserName = defaultUser.Username };
 
-            if (user != null)
-            {
-                continue;
-            }
-
-            user = new User
-            {
-                Username = username
-            };
-
-            await dbContext.Users.AddAsync(user);
+            await aspNetUserManager.CreateAsync(user, defaultUser.Password);
         }
-
-        await dbContext.SaveChangesAsync();
     }
 }

@@ -1,9 +1,11 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Recipes.Api.Models.Requests;
 using Recipes.Api.Models.Results;
 using Recipes.Core.Application.Auth;
+using Recipes.Core.Domain;
 
 namespace Recipes.Api.Controllers;
 
@@ -12,15 +14,18 @@ namespace Recipes.Api.Controllers;
 [ApiVersionNeutral]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthenticator _authenticator;
-    private readonly IAuthTokenGenerator _authTokenGenerator;
+    private readonly IAccessTokenGenerator _accessTokenGenerator;
+    private readonly AspNetUserManager<ApplicationUser> _aspNetUserManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
     public AuthController(
-        IAuthenticator authenticator,
-        IAuthTokenGenerator authTokenGenerator)
+        IAccessTokenGenerator accessTokenGenerator,
+        AspNetUserManager<ApplicationUser> aspNetUserManager,
+        SignInManager<ApplicationUser> signInManager)
     {
-        _authenticator = authenticator;
-        _authTokenGenerator = authTokenGenerator;
+        _accessTokenGenerator = accessTokenGenerator;
+        _aspNetUserManager = aspNetUserManager;
+        _signInManager = signInManager;
     }
 
     /// <summary>
@@ -44,19 +49,25 @@ public class AuthController : ControllerBase
     {
         // Request validation removed from base build.
 
-        var user = await _authenticator.ByUsernameAsync(request.Username, cancellationToken);
+        var user = await _aspNetUserManager.FindByNameAsync(request.Username);
 
         if (user == null)
         {
             return Unauthorized();
         }
 
-        var token = _authTokenGenerator.Create(user);
+        var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+
+        if (!signInResult.Succeeded)
+        {
+            return Unauthorized();
+        }
+
+        var accessToken = _accessTokenGenerator.Create(user);
 
         var result = new LoginResult
         {
-            Token = token,
-            Scheme = "Bearer"
+            AccessToken = accessToken
         };
 
         return Ok(result);

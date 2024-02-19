@@ -5,7 +5,7 @@ namespace Recipes.Core.Application;
 
 public interface IRecipesDbContext
 {
-    DbSet<User> Users { get; }
+    DbSet<ApplicationUser> Users { get; }
     DbSet<Recipe> Recipes { get; }
     DbSet<Ingredient> Ingredients { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

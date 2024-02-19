@@ -13,5 +13,7 @@ public class RecipeEntityConfiguration : IEntityTypeConfiguration<Recipe>
         builder.Property(r => r.Name).IsRequired();
 
         builder.HasMany(r => r.Ingredients).WithOne(i => i.Recipe);
+
+        builder.ToTable("Ooga");
     }
 }

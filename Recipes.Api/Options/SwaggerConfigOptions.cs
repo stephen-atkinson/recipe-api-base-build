@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Recipes.Api.OpenApi;
+namespace Recipes.Api.Options;
 
 public class SwaggerConfigOptions : IConfigureOptions<SwaggerGenOptions>
 {

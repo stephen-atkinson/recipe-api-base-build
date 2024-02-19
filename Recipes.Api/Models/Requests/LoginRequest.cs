@@ -7,4 +7,10 @@ public record LoginRequest
     /// </summary>
     /// <example>joe.bloggs</example>
     public string Username { get; set; } = null!;
+
+    /// <summary>
+    /// The password of the user to authenticate as.
+    /// </summary>
+    /// <example>joe123!</example>
+    public string Password { get; set; } = null!;
 }

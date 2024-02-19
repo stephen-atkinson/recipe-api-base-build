@@ -9,5 +9,5 @@ public class Recipe
     public DateTime Created { get; set; }
     public DateTime LastUpdated { get; set; }
     public ICollection<Ingredient> Ingredients { get; set; } = null!;
-    public User User { get; set; } = null!;
+    public ApplicationUser ApplicationUser { get; set; } = null!;
 }

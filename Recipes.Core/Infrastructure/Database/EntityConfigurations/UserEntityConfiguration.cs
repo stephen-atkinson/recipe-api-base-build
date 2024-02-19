@@ -4,15 +4,10 @@ using Recipes.Core.Domain;
 
 namespace Recipes.Core.Infrastructure.Database.EntityConfigurations;
 
-public class UserEntityConfiguration : IEntityTypeConfiguration<User>
+public class UserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
-        builder.HasKey(u => u.Id);
-
-        builder.Property(u => u.Username).IsRequired();
-        builder.HasIndex(u => u.Username).IsUnique();
-
-        builder.HasMany(u => u.Recipes).WithOne(r => r.User);
+        builder.HasMany(u => u.Recipes).WithOne(r => r.ApplicationUser);
     }
 }
