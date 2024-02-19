@@ -278,7 +278,7 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Ooga", (string)null);
+                    b.ToTable("Recipes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

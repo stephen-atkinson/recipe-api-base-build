@@ -27,8 +27,4 @@
       <ProjectReference Include="..\Recipes.Core\Recipes.Core.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="OpenApi\" />
-    </ItemGroup>
-
 </Project>

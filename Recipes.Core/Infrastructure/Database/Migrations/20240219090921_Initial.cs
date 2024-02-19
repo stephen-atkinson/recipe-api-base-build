@@ -155,7 +155,7 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Ooga",
+                name: "Recipes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -169,9 +169,9 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Ooga", x => x.Id);
+                    table.PrimaryKey("PK_Recipes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ooga_AspNetUsers_ApplicationUserId",
+                        name: "FK_Recipes_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -196,9 +196,9 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                 {
                     table.PrimaryKey("PK_Ingredients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ingredients_Ooga_RecipeId",
+                        name: "FK_Ingredients_Recipes_RecipeId",
                         column: x => x.RecipeId,
-                        principalTable: "Ooga",
+                        principalTable: "Recipes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -246,8 +246,8 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                 column: "RecipeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ooga_ApplicationUserId",
-                table: "Ooga",
+                name: "IX_Recipes_ApplicationUserId",
+                table: "Recipes",
                 column: "ApplicationUserId");
         }
 
@@ -275,7 +275,7 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Ooga");
+                name: "Recipes");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

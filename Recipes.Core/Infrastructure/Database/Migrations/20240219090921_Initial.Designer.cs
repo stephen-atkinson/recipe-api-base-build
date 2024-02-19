@@ -11,7 +11,7 @@ using Recipes.Core.Infrastructure.Database;
 namespace Recipes.Core.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(RecipesDbContext))]
-    [Migration("20240219001432_Initial")]
+    [Migration("20240219090921_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -280,7 +280,7 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Ooga", (string)null);
+                    b.ToTable("Recipes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
