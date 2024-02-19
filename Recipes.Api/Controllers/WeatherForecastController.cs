@@ -5,9 +5,6 @@ namespace Recipes.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[ApiVersion(1)]
-[ApiVersion(1.1)]
-[ApiVersion(2)]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries = {

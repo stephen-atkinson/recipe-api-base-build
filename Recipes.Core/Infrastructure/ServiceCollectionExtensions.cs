@@ -16,6 +16,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection serviceCollection,
         IConfiguration configuration)
     {
+        serviceCollection.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
+        
         serviceCollection.Configure<RecipesDbSettings>(configuration.GetRequiredSection("IngredientsApi"));
         serviceCollection.AddHttpClient<IIngredientsApi, IngredientsApi>();
 
