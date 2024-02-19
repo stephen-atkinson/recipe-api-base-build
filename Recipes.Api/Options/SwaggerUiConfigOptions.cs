@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
@@ -5,22 +6,20 @@ namespace Recipes.Api.Options;
 
 public class SwaggerUiConfigOptions : IConfigureOptions<SwaggerUIOptions>
 {
-    private readonly IEndpointRouteBuilder _endpointRouteBuilder;
+    private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionGroupCollectionProvider;
 
-    public SwaggerUiConfigOptions(IEndpointRouteBuilder endpointRouteBuilder)
+    public SwaggerUiConfigOptions(IApiDescriptionGroupCollectionProvider apiDescriptionGroupCollectionProvider)
     {
-        _endpointRouteBuilder = endpointRouteBuilder;
+        _apiDescriptionGroupCollectionProvider = apiDescriptionGroupCollectionProvider;
     }
     
     public void Configure(SwaggerUIOptions options)
     {
-        var descriptions = _endpointRouteBuilder.DescribeApiVersions();
-
         // build a swagger endpoint for each discovered API version
-        foreach (var description in descriptions)
+        foreach (var description in _apiDescriptionGroupCollectionProvider.ApiDescriptionGroups.Items)
         {
             var url = $"/swagger/{description.GroupName}/swagger.json";
-            var name = description.GroupName.ToUpperInvariant();
+            var name = description.GroupName!.ToUpperInvariant();
             options.SwaggerEndpoint(url, name);
         }
     }

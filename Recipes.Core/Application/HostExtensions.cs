@@ -18,9 +18,21 @@ public static class HostExtensions
 
         foreach (var defaultUser in userOptions.Value.DefaultUsers)
         {
-            var user = new ApplicationUser { UserName = defaultUser.Username };
+            var user = await aspNetUserManager.FindByNameAsync(defaultUser.Username);
 
-            await aspNetUserManager.CreateAsync(user, defaultUser.Password);
+            if (user != null)
+            {
+                continue;
+            }
+            
+            user = new ApplicationUser { UserName = defaultUser.Username };
+
+            var result = await aspNetUserManager.CreateAsync(user, defaultUser.Password);
+            
+            if (!result.Succeeded)
+            {
+                throw new Exception("Seed users failed");
+            }
         }
     }
 }

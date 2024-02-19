@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
 
         serviceCollection.AddIdentityCore<ApplicationUser>()
             .AddUserManager<AspNetUserManager<ApplicationUser>>()
+            .AddSignInManager()
             .AddEntityFrameworkStores<RecipesDbContext>();
 
         return serviceCollection;

@@ -18,6 +18,8 @@ public class RecipesDbContext : IdentityDbContext<ApplicationUser>, IRecipesDbCo
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        
         modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
     }
 }

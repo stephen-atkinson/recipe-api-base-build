@@ -11,6 +11,6 @@ public record LoginRequest
     /// <summary>
     /// The password of the user to authenticate as.
     /// </summary>
-    /// <example>joe123!</example>
+    /// <example>Joe123!</example>
     public string Password { get; set; } = null!;
 }
