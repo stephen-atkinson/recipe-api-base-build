@@ -12,7 +12,6 @@ public class RecipesDbContext : IdentityDbContext<ApplicationUser>, IRecipesDbCo
     {
     }
     
-    public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
     public DbSet<Recipe> Recipes => Set<Recipe>();
     public DbSet<Ingredient> Ingredients => Set<Ingredient>();
 

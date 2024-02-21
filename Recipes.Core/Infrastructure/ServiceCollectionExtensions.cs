@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
             var hostEnvironment = sp.GetRequiredService<IHostEnvironment>();
             var dbOptions = sp.GetRequiredService<IOptions<RecipesDbSettings>>();
 
-            var dbPath = Path.Join(hostEnvironment.ContentRootPath, dbOptions.Value.FileName);
+            var dbPath = Path.Join(hostEnvironment.ContentRootPath, dbOptions.Value.DatabaseName);
 
             b.UseSqlite($"Data Source={dbPath}");
         });
