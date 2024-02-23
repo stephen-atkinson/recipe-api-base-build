@@ -49,6 +49,21 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Groups",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Diet = table.Column<int>(type: "INTEGER", nullable: true),
+                    Course = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Groups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -162,6 +177,7 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Instructions = table.Column<string>(type: "TEXT", nullable: false),
+                    Diet = table.Column<int>(type: "INTEGER", nullable: true),
                     Course = table.Column<int>(type: "INTEGER", nullable: false),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     LastUpdated = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -174,6 +190,30 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                         name: "FK_Recipes_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GroupRecipe",
+                columns: table => new
+                {
+                    GroupsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    RecipesId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupRecipe", x => new { x.GroupsId, x.RecipesId });
+                    table.ForeignKey(
+                        name: "FK_GroupRecipe_Groups_GroupsId",
+                        column: x => x.GroupsId,
+                        principalTable: "Groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GroupRecipe_Recipes_RecipesId",
+                        column: x => x.RecipesId,
+                        principalTable: "Recipes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -241,6 +281,11 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_GroupRecipe_RecipesId",
+                table: "GroupRecipe",
+                column: "RecipesId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ingredients_RecipeId",
                 table: "Ingredients",
                 column: "RecipeId");
@@ -269,10 +314,16 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "GroupRecipe");
+
+            migrationBuilder.DropTable(
                 name: "Ingredients");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
 
             migrationBuilder.DropTable(
                 name: "Recipes");

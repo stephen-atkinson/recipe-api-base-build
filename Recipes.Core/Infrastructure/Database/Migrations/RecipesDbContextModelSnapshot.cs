@@ -17,6 +17,21 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.26");
 
+            modelBuilder.Entity("GroupRecipe", b =>
+                {
+                    b.Property<int>("GroupsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RecipesId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("GroupsId", "RecipesId");
+
+                    b.HasIndex("RecipesId");
+
+                    b.ToTable("GroupRecipe");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -209,6 +224,27 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("Recipes.Core.Domain.Group", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("Course")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("Diet")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Groups");
+                });
+
             modelBuilder.Entity("Recipes.Core.Domain.Ingredient", b =>
                 {
                     b.Property<int>("Id")
@@ -263,6 +299,9 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("Diet")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Instructions")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -279,6 +318,21 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Recipes");
+                });
+
+            modelBuilder.Entity("GroupRecipe", b =>
+                {
+                    b.HasOne("Recipes.Core.Domain.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Recipes.Core.Domain.Recipe", null)
+                        .WithMany()
+                        .HasForeignKey("RecipesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

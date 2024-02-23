@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Recipes.Api.HealthChecks;
 using Recipes.Api.Options;
 using Recipes.Core.Application;
 using Recipes.Core.Infrastructure;
@@ -14,6 +15,7 @@ builder.Services.ConfigureOptions<JwtConfigOptions>();
 
 builder.Services.AddControllers();
 builder.Services.ConfigureOptions<RouteConfigOptions>();
+builder.Services.ConfigureOptions<JsonConfigOptions>();
 
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureOptions<SwaggerConfigOptions>();
@@ -24,10 +26,12 @@ builder.Services.ConfigureOptions<ApiVersioningConfigOptions>();
 builder.Services.ConfigureOptions<ApiExplorerConfigOptions>();
 
 builder.Services.AddHealthChecks()
-    .AddDbContextCheck<RecipesDbContext>();
+    .AddDbContextCheck<RecipesDbContext>()
+    .AddCheck<IngredientsApiHealthCheck>(IngredientsApiHealthCheck.HealthCheckName);
 
 var app = builder.Build();
 
+await app.EnsureDatabase();
 await app.SeedUsers();
 
 if (app.Environment.IsDevelopment())

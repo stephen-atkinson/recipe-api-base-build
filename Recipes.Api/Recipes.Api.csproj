@@ -23,9 +23,5 @@
     <ItemGroup>
       <ProjectReference Include="..\Recipes.Core\Recipes.Core.csproj" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Recipes.Core\Recipes.Core.csproj" />
-    </ItemGroup>
-
+    
 </Project>

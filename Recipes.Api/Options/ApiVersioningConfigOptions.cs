@@ -9,5 +9,6 @@ public class ApiVersioningConfigOptions : IConfigureOptions<ApiVersioningOptions
     {
         options.AssumeDefaultVersionWhenUnspecified = true;
         options.ReportApiVersions = true;
+        options.ApiVersionReader = new QueryStringApiVersionReader();
     }
 }

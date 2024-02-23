@@ -14,6 +14,7 @@ public class RecipesDbContext : IdentityDbContext<ApplicationUser>, IRecipesDbCo
     
     public DbSet<Recipe> Recipes => Set<Recipe>();
     public DbSet<Ingredient> Ingredients => Set<Ingredient>();
+    public DbSet<Group> Groups => Set<Group>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

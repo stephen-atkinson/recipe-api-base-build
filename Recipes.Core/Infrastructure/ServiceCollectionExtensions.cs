@@ -18,22 +18,18 @@ public static class ServiceCollectionExtensions
     {
         serviceCollection.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
         
-        serviceCollection.Configure<RecipesDbSettings>(configuration.GetRequiredSection("IngredientsApi"));
+        serviceCollection.Configure<IngredientsApiSettings>(configuration.GetRequiredSection("IngredientsApi"));
         serviceCollection.AddHttpClient<IIngredientsApi, IngredientsApi>();
 
         serviceCollection.AddMemoryCache();
 
         serviceCollection.Configure<RecipesDbSettings>(configuration.GetRequiredSection("RecipesDb"));
-        serviceCollection.AddDbContext<RecipesDbContext>((sp, b) =>
-        {
-            var hostEnvironment = sp.GetRequiredService<IHostEnvironment>();
-            var dbOptions = sp.GetRequiredService<IOptions<RecipesDbSettings>>();
 
-            var dbPath = Path.Join(hostEnvironment.ContentRootPath, dbOptions.Value.DatabaseName);
-
-            b.UseSqlite($"Data Source={dbPath}");
-        });
-
+        serviceCollection.AddSingleton<IRecipesDbContextOptionsFactory, RecipesDbContextOptionsFactory>();
+        serviceCollection.AddScoped<DbContextOptions<RecipesDbContext>>(sp =>
+            sp.GetRequiredService<IRecipesDbContextOptionsFactory>().Create());
+        serviceCollection.AddDbContext<RecipesDbContext>();
+        
         serviceCollection.AddScoped<IRecipesDbContext>(sp => sp.GetRequiredService<RecipesDbContext>());
 
         serviceCollection.AddIdentityCore<ApplicationUser>()
