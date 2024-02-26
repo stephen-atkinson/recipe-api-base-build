@@ -293,7 +293,7 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Course")
+                    b.Property<int?>("Course")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Created")

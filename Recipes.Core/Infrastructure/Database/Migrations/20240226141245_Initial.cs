@@ -178,7 +178,7 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Instructions = table.Column<string>(type: "TEXT", nullable: false),
                     Diet = table.Column<int>(type: "INTEGER", nullable: true),
-                    Course = table.Column<int>(type: "INTEGER", nullable: false),
+                    Course = table.Column<int>(type: "INTEGER", nullable: true),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
                     LastUpdated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ApplicationUserId = table.Column<string>(type: "TEXT", nullable: false)
