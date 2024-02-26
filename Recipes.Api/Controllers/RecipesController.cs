@@ -27,7 +27,8 @@ public class RecipesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateRecipeRequest request, CancellationToken cancellationToken)
     {
-        var user = await _recipesDbContext.Users.FindAsync(new object[] { User.Identity.Name }, cancellationToken);
+        var user = await _recipesDbContext.Users
+            .FindAsync(new object[] { User.Identity.Name }, cancellationToken);
 
         var utcNow = _dateTimeProvider.UtcNow;
         
@@ -46,11 +47,11 @@ public class RecipesController : ControllerBase
 
         await _recipesDbContext.SaveChangesAsync(CancellationToken.None);
 
-        var recipeDto = _mapper.Map<RecipeDto>(recipe);
+        var dto = _mapper.Map<RecipeDto>(recipe);
         
         var url = Url.Action("ReadSingle", new { recipe.Id });
 
-        return Created(url!, recipeDto);
+        return Created(url!, dto);
     }
 
     [HttpGet("{id:int}")]
@@ -79,9 +80,9 @@ public class RecipesController : ControllerBase
             .Take(request.PageSize)
             .ToArrayAsync(cancellationToken);
 
-        var recipeDto = _mapper.Map<IReadOnlyCollection<RecipeDto>>(recipes);
+        var dto = _mapper.Map<IReadOnlyCollection<RecipeDto>>(recipes);
 
-        return Ok(recipeDto);
+        return Ok(dto);
     }
 
     [HttpPut("{id:int}")]
@@ -99,15 +100,16 @@ public class RecipesController : ControllerBase
         
         await _recipesDbContext.SaveChangesAsync(CancellationToken.None);
         
-        var recipeDto = _mapper.Map<RecipeDto>(recipe);
+        var dto = _mapper.Map<RecipeDto>(recipe);
         
-        return Ok(recipeDto);
+        return Ok(dto);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var recipe = await _recipesDbContext.Recipes.FindAsync(new object[] { id }, cancellationToken);
+        var recipe = await _recipesDbContext.Recipes
+            .FindAsync(new object[] { id }, cancellationToken);
 
         _recipesDbContext.Recipes.Remove(recipe);
 

@@ -10,5 +10,9 @@ public class MapperProfiles : Profile
     {
         CreateMap<Recipe, RecipeDto>()
             .ForMember(r => r.CreatedBy, c => c.MapFrom(r => r.ApplicationUser.UserName));
+
+        CreateMap<Group, GroupDto>()
+            .ForMember(g => g.CreatedBy, c => c.MapFrom(g => g.ApplicationUser.UserName))
+            .ForMember(g => g.RecipeIds, c => c.MapFrom(g => g.Recipes.Select(r => r.Id).ToArray()));
     }
 }
