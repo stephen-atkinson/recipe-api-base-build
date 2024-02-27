@@ -13,32 +13,18 @@ namespace Recipes.Api.Controllers;
 public class RecipesController : ControllerBase
 {
     private readonly IRecipeRepository _recipeRepository;
-    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IMapper _mapper;
 
-    public RecipesController(IRecipeRepository recipeRepository, IDateTimeProvider dateTimeProvider, IMapper mapper)
+    public RecipesController(IRecipeRepository recipeRepository, IMapper mapper)
     {
         _recipeRepository = recipeRepository;
-        _dateTimeProvider = dateTimeProvider;
         _mapper = mapper;
     }
     
     [HttpPost]
     public async Task<IActionResult> Create(CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
     {
-        var utcNow = _dateTimeProvider.UtcNow;
-        
-        var recipe = new Recipe
-        {
-            Course = request.Course,
-            Diet = request.Diet,
-            Name = request.Name,
-            Instructions = request.Instructions,
-            Difficulty = request.Difficulty,
-            UserId = User.Identity.Name,
-            Created = utcNow,
-            LastUpdated = utcNow,
-        };
+        var recipe = RequestToRecipe(null, request);
 
         recipe.Id = await _recipeRepository.CreateAsync(recipe, CancellationToken.None);
 
@@ -91,12 +77,7 @@ public class RecipesController : ControllerBase
             throw new UnauthorizedAccessException("User doesn't own recipe.");
         }
         
-        recipe.Course = request.Course;
-        recipe.Diet = request.Diet;
-        recipe.Name = request.Name;
-        recipe.Instructions = request.Instructions;
-        recipe.Difficulty = request.Difficulty;
-        recipe.LastUpdated = _dateTimeProvider.UtcNow;
+        recipe = RequestToRecipe(id, request);
 
         await _recipeRepository.UpdateAsync(recipe, CancellationToken.None);
         
@@ -118,5 +99,21 @@ public class RecipesController : ControllerBase
         await _recipeRepository.DeleteAsync(id, CancellationToken.None);
 
         return NoContent();
+    }
+
+    private Recipe RequestToRecipe(int? id, CreateOrUpdateRecipeRequest request)
+    {
+        var recipe = new Recipe
+        {
+            Id = id ?? 0,
+            Course = request.Course,
+            Diet = request.Diet,
+            Name = request.Name,
+            Instructions = request.Instructions,
+            Difficulty = request.Difficulty,
+            UserId = User.Identity.Name,
+        };
+
+        return recipe;
     }
 }
