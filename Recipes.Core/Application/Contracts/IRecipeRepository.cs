@@ -11,5 +11,4 @@ public interface IRecipeRepository
     Task DeleteAsync(int id, CancellationToken cancellationToken);
     Task<Recipe?> GetAsync(int id, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<Recipe>> GetAsync(GetRecipesCriteria criteria, CancellationToken cancellationToken);
-    Task<bool> ExistsAsync(int id, CancellationToken cancellationToken);
 }

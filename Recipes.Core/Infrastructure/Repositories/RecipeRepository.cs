@@ -80,18 +80,12 @@ public class RecipeRepository : IRecipeRepository
             .Where(r => criteria.Ids == null || criteria.Ids.Contains(r.Id))
             .Where(r => criteria.DifficultyFrom == null || r.Difficulty >= criteria.DifficultyFrom)
             .Where(r => criteria.DifficultyTo == null || r.Difficulty <= criteria.DifficultyTo)
+            .Where(r => criteria.UserId == null || r.UserId == criteria.UserId)
             .Skip(criteria.Skip)
             .Take(criteria.Take)
             .ToArrayAsync(cancellationToken);
 
         return recipes;
-    }
-
-    public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken)
-    {
-        var exists = await _recipesDbContext.Recipes.AnyAsync(r => r.Id == id, cancellationToken);
-
-        return exists;
     }
 
     private static void Map(Recipe from, Recipe to)
