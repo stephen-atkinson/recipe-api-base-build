@@ -9,5 +9,6 @@ public class ApiExplorerConfigOptions : IConfigureOptions<ApiExplorerOptions>
     {
         // ReSharper disable once StringLiteralTypo
         options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
     }
 }
