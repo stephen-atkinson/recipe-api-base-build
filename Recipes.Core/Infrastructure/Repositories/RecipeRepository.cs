@@ -95,6 +95,7 @@ public class RecipeRepository : IRecipeRepository
         to.Name = from.Name;
         to.Instructions = from.Instructions;
         to.Difficulty = from.Difficulty;
+        to.UserId = from.UserId;
 
         to.Ingredients = from.Ingredients.Select(fi =>
             to.Ingredients.FirstOrDefault(i => i.ExternalId == fi.ExternalId) ?? new Ingredient
