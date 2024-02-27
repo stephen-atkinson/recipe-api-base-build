@@ -98,20 +98,27 @@ public class RecipeRepository : IRecipeRepository
         to.UserId = from.UserId;
 
         to.Ingredients = from.Ingredients.Select(fi =>
-            to.Ingredients.FirstOrDefault(i => i.ExternalId == fi.ExternalId) ?? new Ingredient
-            {
-                Name = fi.Name,
-                Category = fi.Category,
-                Description = fi.Description,
-                ExternalId = fi.ExternalId,
-                SupplierName = fi.SupplierName
-            }).ToList();
+        {
+            var ingredient = to.Ingredients.FirstOrDefault(i => i.ExternalId == fi.ExternalId) ?? new Ingredient();
+
+            ingredient.Name = fi.Name;
+            ingredient.Category = fi.Category;
+            ingredient.Description = fi.Description;
+            ingredient.ExternalId = fi.ExternalId;
+            ingredient.SupplierName = fi.SupplierName;
+
+            return ingredient;
+
+        }).ToList();
 
         to.Ratings = from.Ratings.Select(fr =>
-            to.Ratings.FirstOrDefault(r => r.UserId == fr.UserId) ?? new Rating
-            {
-                UserId = fr.UserId,
-                Value = fr.Value
-            }).ToList();
+        {
+            var rating = to.Ratings.FirstOrDefault(r => r.UserId == fr.UserId) ?? new Rating();
+            
+            rating.UserId = fr.UserId;
+            rating.Value = fr.Value;
+
+            return rating;
+        }).ToList();
     }
 }
