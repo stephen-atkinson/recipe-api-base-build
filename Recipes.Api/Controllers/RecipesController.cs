@@ -102,6 +102,25 @@ public class RecipesController : ControllerBase
         return NoContent();
     }
 
+    [HttpPatch("{id:int}/rating")]
+    public async Task<IActionResult> CreateOrUpdateRating(int id, CreateOrUpdateRecipeRatingRequest request, CancellationToken cancellationToken)
+    {
+        var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
+
+        var rating = recipe.Ratings.FirstOrDefault(r => r.UserId == User.Identity.Name);
+
+        if (rating == null)
+        {
+            recipe.Ratings.Add(rating = new Rating { UserId = User.Identity.Name });
+        }
+
+        rating.Value = request.Rating;
+
+        await _recipeRepository.UpdateAsync(recipe, CancellationToken.None);
+
+        return NoContent();
+    }
+
     private Recipe RequestToRecipe(int? id, CreateOrUpdateRecipeRequest request)
     {
         var recipe = new Recipe

@@ -8,6 +8,7 @@ public class MapperProfiles : Profile
 {
     public MapperProfiles()
     {
-        CreateMap<Recipe, RecipeDto>();
+        CreateMap<Recipe, RecipeDto>()
+            .ForMember(r => r.AverageRating, c => c.MapFrom(r => r.Ratings.Select(r => r.Value).DefaultIfEmpty().Average()));
     }
 }
