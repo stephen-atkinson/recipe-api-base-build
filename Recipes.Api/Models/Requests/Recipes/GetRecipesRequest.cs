@@ -1,6 +1,6 @@
 using Recipes.Core.Domain;
 
-namespace Recipes.Api.Models.Requests;
+namespace Recipes.Api.Models.Requests.Recipes;
 
 public class GetRecipesRequest
 {

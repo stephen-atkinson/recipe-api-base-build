@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Recipes.Api.Models.Requests;
+using Recipes.Api.Models.Requests.Recipes;
 using Recipes.Api.Models.Results;
 using Recipes.Core.Application;
 using Recipes.Core.Domain;
@@ -25,7 +26,7 @@ public class RecipesController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> Create(CreateRecipeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create(CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
     {
         var user = await _recipesDbContext.Users
             .FindAsync(new object[] { User.Identity.Name }, cancellationToken);
@@ -38,6 +39,7 @@ public class RecipesController : ControllerBase
             Diet = request.Diet,
             Name = request.Name,
             Instructions = request.Instructions,
+            Difficulty = request.Difficulty,
             ApplicationUser = user,
             Created = utcNow,
             LastUpdated = utcNow,
@@ -86,7 +88,7 @@ public class RecipesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, UpdateRecipeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(int id, CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
     {
         var recipe = await _recipesDbContext.Recipes
             .Include(r => r.ApplicationUser)
@@ -101,6 +103,7 @@ public class RecipesController : ControllerBase
         recipe.Diet = request.Diet;
         recipe.Name = request.Name;
         recipe.Instructions = request.Instructions;
+        recipe.Difficulty = request.Difficulty;
         recipe.LastUpdated = _dateTimeProvider.UtcNow;
         
         await _recipesDbContext.SaveChangesAsync(CancellationToken.None);

@@ -26,7 +26,7 @@ public class GroupsController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> Create(CreateGroupRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create(CreateOrUpdateGroupRequest request, CancellationToken cancellationToken)
     {
         var user = await _recipesDbContext.Users
             .FindAsync(new object[] { User.Identity.Name }, cancellationToken);
@@ -93,7 +93,7 @@ public class GroupsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, UpdateGroupRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(int id, CreateOrUpdateGroupRequest request, CancellationToken cancellationToken)
     {
         var group = await _recipesDbContext.Groups
             .Include(g => g.ApplicationUser)
