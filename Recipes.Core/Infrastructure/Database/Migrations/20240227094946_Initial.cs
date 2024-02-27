@@ -185,6 +185,7 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Instructions = table.Column<string>(type: "TEXT", nullable: false),
+                    Difficulty = table.Column<int>(type: "INTEGER", nullable: false),
                     Diet = table.Column<int>(type: "INTEGER", nullable: true),
                     Course = table.Column<int>(type: "INTEGER", nullable: true),
                     Created = table.Column<DateTime>(type: "TEXT", nullable: false),
