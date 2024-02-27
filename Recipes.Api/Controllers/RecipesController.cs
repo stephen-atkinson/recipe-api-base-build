@@ -57,7 +57,8 @@ public class RecipesController : ControllerBase
             Skip = skip,
             Take = request.PageSize,
             DifficultyFrom = request.DifficultyFrom,
-            DifficultyTo = request.DifficultyTo
+            DifficultyTo = request.DifficultyTo,
+            UserId = request.UserId
         };
 
         var recipes = await _recipeRepository.GetAsync(searchCriteria, cancellationToken);

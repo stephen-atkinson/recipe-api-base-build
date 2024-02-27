@@ -10,4 +10,5 @@ public class GetRecipesRequest
     public Diet? Diet { get; set; }
     public int? DifficultyFrom { get; set; }
     public int? DifficultyTo { get; set; }
+    public string? UserId { get; set; }
 }
