@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Recipes.Core.Application.Contracts;
 using Recipes.Core.Infrastructure.Database;
 using Recipes.Core.Infrastructure.Ingredients;
+using Recipes.Core.Infrastructure.Repositories;
 
 namespace Recipes.Core.Infrastructure.Extensions;
 
@@ -28,6 +29,8 @@ public static class ServiceCollectionExtensions
         serviceCollection.AddDbContext<RecipesDbContext>();
         
         serviceCollection.AddScoped<IRecipesDbContext>(sp => sp.GetRequiredService<RecipesDbContext>());
+
+        serviceCollection.AddScoped<IRecipeRepository, RecipeRepository>();
 
         serviceCollection.AddIdentityCore<IdentityUser>()
             .AddUserManager<AspNetUserManager<IdentityUser>>()

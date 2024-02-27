@@ -1,12 +1,10 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Recipes.Api.Models.Requests;
+using Recipes.Api.Models.Dtos;
 using Recipes.Api.Models.Requests.Recipes;
-using Recipes.Api.Models.Results;
-using Recipes.Core.Application;
+using Recipes.Core.Application.Contracts;
+using Recipes.Core.Application.Models;
 using Recipes.Core.Domain;
-using Recipes.Core.Infrastructure.Database;
 
 namespace Recipes.Api.Controllers;
 
@@ -14,13 +12,13 @@ namespace Recipes.Api.Controllers;
 [Route("[controller]")]
 public class RecipesController : ControllerBase
 {
-    private readonly RecipesDbContext _recipesDbContext;
+    private readonly IRecipeRepository _recipeRepository;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IMapper _mapper;
 
-    public RecipesController(RecipesDbContext recipesDbContext, IDateTimeProvider dateTimeProvider, IMapper mapper)
+    public RecipesController(IRecipeRepository recipeRepository, IDateTimeProvider dateTimeProvider, IMapper mapper)
     {
-        _recipesDbContext = recipesDbContext;
+        _recipeRepository = recipeRepository;
         _dateTimeProvider = dateTimeProvider;
         _mapper = mapper;
     }
@@ -28,9 +26,6 @@ public class RecipesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
     {
-        var user = await _recipesDbContext.Users
-            .FindAsync(new object[] { User.Identity.Name }, cancellationToken);
-
         var utcNow = _dateTimeProvider.UtcNow;
         
         var recipe = new Recipe
@@ -40,14 +35,12 @@ public class RecipesController : ControllerBase
             Name = request.Name,
             Instructions = request.Instructions,
             Difficulty = request.Difficulty,
-            ApplicationUser = user,
+            UserId = User.Identity.Name,
             Created = utcNow,
             LastUpdated = utcNow,
         };
 
-        await _recipesDbContext.AddAsync(recipe, CancellationToken.None);
-
-        await _recipesDbContext.SaveChangesAsync(CancellationToken.None);
+        recipe.Id = await _recipeRepository.CreateAsync(recipe, CancellationToken.None);
 
         var dto = _mapper.Map<RecipeDto>(recipe);
         
@@ -59,9 +52,7 @@ public class RecipesController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> ReadSingle(int id, CancellationToken cancellationToken)
     {
-        var recipe = await _recipesDbContext.Recipes
-            .Include(r => r.ApplicationUser)
-            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+        var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
 
         var recipeDto = _mapper.Map<RecipeDto>(recipe);
 
@@ -73,14 +64,17 @@ public class RecipesController : ControllerBase
     {
         var skip = (request.Page - 1)  * request.PageSize;
 
-        var recipes = await _recipesDbContext.Recipes
-            .Include(r => r.ApplicationUser)
-            .Where(r => request.Course == null || r.Course == request.Course)
-            .Where(r => request.Diet == null || r.Diet == request.Diet)
-            .OrderBy(r => r.Id)
-            .Skip(skip)
-            .Take(request.PageSize)
-            .ToArrayAsync(cancellationToken);
+        var searchCriteria = new GetRecipesCriteria
+        {
+            Course = request.Course,
+            Diet = request.Diet,
+            Skip = skip,
+            Take = request.PageSize,
+            DifficultyFrom = request.DifficultyFrom,
+            DifficultyTo = request.DifficultyTo
+        };
+
+        var recipes = await _recipeRepository.GetAsync(searchCriteria, cancellationToken);
 
         var dto = _mapper.Map<IReadOnlyCollection<RecipeDto>>(recipes);
 
@@ -90,11 +84,9 @@ public class RecipesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
     {
-        var recipe = await _recipesDbContext.Recipes
-            .Include(r => r.ApplicationUser)
-            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+        var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
         
-        if (recipe.ApplicationUser.Id != User.Identity.Name)
+        if (recipe.UserId != User.Identity.Name)
         {
             throw new UnauthorizedAccessException("User doesn't own recipe.");
         }
@@ -105,8 +97,8 @@ public class RecipesController : ControllerBase
         recipe.Instructions = request.Instructions;
         recipe.Difficulty = request.Difficulty;
         recipe.LastUpdated = _dateTimeProvider.UtcNow;
-        
-        await _recipesDbContext.SaveChangesAsync(CancellationToken.None);
+
+        await _recipeRepository.UpdateAsync(recipe, CancellationToken.None);
         
         var dto = _mapper.Map<RecipeDto>(recipe);
         
@@ -116,18 +108,14 @@ public class RecipesController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var recipe = await _recipesDbContext.Recipes
-            .Include(r => r.ApplicationUser)
-            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
-
-        if (recipe.ApplicationUser.Id != User.Identity.Name)
+        var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
+        
+        if (recipe.UserId != User.Identity.Name)
         {
             throw new UnauthorizedAccessException("User doesn't own recipe.");
         }
 
-        _recipesDbContext.Recipes.Remove(recipe);
-
-        await _recipesDbContext.SaveChangesAsync(CancellationToken.None);
+        await _recipeRepository.DeleteAsync(id, CancellationToken.None);
 
         return NoContent();
     }

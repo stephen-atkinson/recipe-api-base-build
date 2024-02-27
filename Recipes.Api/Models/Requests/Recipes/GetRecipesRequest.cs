@@ -8,4 +8,6 @@ public class GetRecipesRequest
     public int PageSize { get; set; } = 20;
     public Course? Course { get; set; }
     public Diet? Diet { get; set; }
+    public int? DifficultyFrom { get; set; }
+    public int? DifficultyTo { get; set; }
 }
