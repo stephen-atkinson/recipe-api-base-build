@@ -11,7 +11,5 @@ public class RecipeDto
     public decimal AverageRating { get; set; }
     public Diet? Diet { get; set; }
     public Course? Course { get; set; }
-    public DateTime Created { get; set; }
-    public DateTime LastUpdated { get; set; }
-    public string CreatedBy { get; set; } = null!;
+    public string UserId { get; set; } = null!;
 }
