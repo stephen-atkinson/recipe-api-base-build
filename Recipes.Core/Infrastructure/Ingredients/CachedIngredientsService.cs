@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Caching.Memory;
+using Recipes.Core.Application.Contracts;
 
-namespace Recipes.Core.Application;
+namespace Recipes.Core.Infrastructure.Ingredients;
 
 public class CachedIngredientsService : IIngredientsService
 {

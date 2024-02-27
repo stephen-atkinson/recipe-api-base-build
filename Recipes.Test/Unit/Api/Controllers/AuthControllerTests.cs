@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Recipes.Api.Controllers;
+using Recipes.Api.Models.Dtos;
 using Recipes.Api.Models.Requests;
-using Recipes.Api.Models.Results;
 using Recipes.Core.Application.Auth;
 using Recipes.Core.Domain;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
@@ -14,27 +14,27 @@ namespace Recipes.Test.Unit.Api.Controllers;
 public class AuthControllerTests
 {
     private Mock<IAccessTokenGenerator> _mockAccessTokenGenerator;
-    private Mock<AspNetUserManager<ApplicationUser>> _mockAspNetUserManager;
-    private Mock<SignInManager<ApplicationUser>> _mockSignInManager;
+    private Mock<AspNetUserManager<IdentityUser>> _mockAspNetUserManager;
+    private Mock<SignInManager<IdentityUser>> _mockSignInManager;
 
     private AuthController _authController;
 
     private LoginRequest _request;
-    private ApplicationUser _applicationUser;
+    private IdentityUser _user;
 
     [SetUp]
     public void SetUp()
     {
         _mockAccessTokenGenerator = new Mock<IAccessTokenGenerator>();
         
-        _mockAspNetUserManager = new Mock<AspNetUserManager<ApplicationUser>>(
-            Mock.Of<IUserStore<ApplicationUser>>(), 
+        _mockAspNetUserManager = new Mock<AspNetUserManager<IdentityUser>>(
+            Mock.Of<IUserStore<IdentityUser>>(), 
             null, null, null, null, null, null, null, null);
         
-        _mockSignInManager = new Mock<SignInManager<ApplicationUser>>(
+        _mockSignInManager = new Mock<SignInManager<IdentityUser>>(
             _mockAspNetUserManager.Object,
             Mock.Of<IHttpContextAccessor>(),
-            Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(),
+            Mock.Of<IUserClaimsPrincipalFactory<IdentityUser>>(),
             null, null, null, null);
 
         _authController = new AuthController(
@@ -43,7 +43,7 @@ public class AuthControllerTests
             _mockSignInManager.Object);
         
         _request = new LoginRequest { Username = "joe.bloggs" };
-        _applicationUser = new ApplicationUser();
+        _user = new IdentityUser();
     }
     
     [Test]
@@ -53,7 +53,7 @@ public class AuthControllerTests
 
         _mockAspNetUserManager
             .Setup(m => m.FindByNameAsync(_request.Username))
-            .ReturnsAsync((ApplicationUser)null!);
+            .ReturnsAsync((IdentityUser)null!);
 
         // Act
 
@@ -71,10 +71,10 @@ public class AuthControllerTests
         
         _mockAspNetUserManager
             .Setup(m => m.FindByNameAsync(_request.Username))
-            .ReturnsAsync(_applicationUser);
+            .ReturnsAsync(_user);
 
         _mockSignInManager
-            .Setup(m => m.CheckPasswordSignInAsync(_applicationUser, _request.Password, false))
+            .Setup(m => m.CheckPasswordSignInAsync(_user, _request.Password, false))
             .ReturnsAsync(SignInResult.Failed);
         
         // Act
@@ -95,14 +95,14 @@ public class AuthControllerTests
         
         _mockAspNetUserManager
             .Setup(m => m.FindByNameAsync(_request.Username))
-            .ReturnsAsync(_applicationUser);
+            .ReturnsAsync(_user);
 
         _mockSignInManager
-            .Setup(m => m.CheckPasswordSignInAsync(_applicationUser, _request.Password, false))
+            .Setup(m => m.CheckPasswordSignInAsync(_user, _request.Password, false))
             .ReturnsAsync(SignInResult.Success);
 
         _mockAccessTokenGenerator
-            .Setup(g => g.Create(_applicationUser))
+            .Setup(g => g.Create(_user))
             .Returns(token);
         
         // Act

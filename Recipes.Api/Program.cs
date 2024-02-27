@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Recipes.Api.HealthChecks;
 using Recipes.Api.Options;
-using Recipes.Core.Application;
-using Recipes.Core.Infrastructure;
+using Recipes.Core.Application.Extensions;
 using Recipes.Core.Infrastructure.Database;
+using Recipes.Core.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,4 +52,7 @@ app.MapControllers().RequireAuthorization();
 app.Run();
 
 // Make the implicit Program class public so test projects can access it
-public partial class Program { }
+namespace Recipes.Api
+{
+    public partial class Program { }
+}

@@ -1,4 +1,4 @@
-namespace Recipes.Api.Models.Results;
+namespace Recipes.Api.Models.Dtos;
 
 public record LoginResult
 {

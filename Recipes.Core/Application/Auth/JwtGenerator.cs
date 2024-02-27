@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Recipes.Core.Application.Contracts;
 using Recipes.Core.Domain;
 
 namespace Recipes.Core.Application.Auth;
@@ -17,7 +19,7 @@ public class JwtGenerator : IAccessTokenGenerator
         _dateTimeProvider = dateTimeProvider;
     }
     
-    public string Create(ApplicationUser applicationUser)
+    public string Create(IdentityUser user)
     {
         var jwtSettings = _jwtOptions.CurrentValue;
 
@@ -33,7 +35,7 @@ public class JwtGenerator : IAccessTokenGenerator
             Expires = utcNow.Add(jwtSettings.ExpiresIn),
             Subject = new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.Name, applicationUser.Id),
+                new Claim(ClaimTypes.Name, user.Id),
             }),
             SigningCredentials = new SigningCredentials(jwtSettings.GetSigningKey(), SecurityAlgorithms.HmacSha256Signature)
         };

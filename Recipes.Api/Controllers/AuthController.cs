@@ -2,8 +2,8 @@ using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Recipes.Api.Models.Dtos;
 using Recipes.Api.Models.Requests;
-using Recipes.Api.Models.Results;
 using Recipes.Core.Application.Auth;
 using Recipes.Core.Domain;
 
@@ -15,13 +15,13 @@ namespace Recipes.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAccessTokenGenerator _accessTokenGenerator;
-    private readonly AspNetUserManager<ApplicationUser> _aspNetUserManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly AspNetUserManager<IdentityUser> _aspNetUserManager;
+    private readonly SignInManager<IdentityUser> _signInManager;
 
     public AuthController(
         IAccessTokenGenerator accessTokenGenerator,
-        AspNetUserManager<ApplicationUser> aspNetUserManager,
-        SignInManager<ApplicationUser> signInManager)
+        AspNetUserManager<IdentityUser> aspNetUserManager,
+        SignInManager<IdentityUser> signInManager)
     {
         _accessTokenGenerator = accessTokenGenerator;
         _aspNetUserManager = aspNetUserManager;

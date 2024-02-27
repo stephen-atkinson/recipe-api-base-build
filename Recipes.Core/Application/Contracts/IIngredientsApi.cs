@@ -1,4 +1,4 @@
-namespace Recipes.Core.Application;
+namespace Recipes.Core.Application.Contracts;
 
 public interface IIngredientsApi
 {

@@ -2,8 +2,11 @@ using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Recipes.Core.Application.Auth;
+using Recipes.Core.Application.Contracts;
+using Recipes.Core.Application.Models;
+using Recipes.Core.Infrastructure.Ingredients;
 
-namespace Recipes.Core.Application;
+namespace Recipes.Core.Application.Extensions;
 
 public static class ServiceCollectionExtensions
 {
