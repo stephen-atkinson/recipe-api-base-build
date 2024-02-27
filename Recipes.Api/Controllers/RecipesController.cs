@@ -92,6 +92,11 @@ public class RecipesController : ControllerBase
             .Include(r => r.ApplicationUser)
             .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
         
+        if (recipe.ApplicationUser.Id != User.Identity.Name)
+        {
+            throw new UnauthorizedAccessException("User doesn't own recipe.");
+        }
+        
         recipe.Course = request.Course;
         recipe.Diet = request.Diet;
         recipe.Name = request.Name;
@@ -109,7 +114,13 @@ public class RecipesController : ControllerBase
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         var recipe = await _recipesDbContext.Recipes
-            .FindAsync(new object[] { id }, cancellationToken);
+            .Include(r => r.ApplicationUser)
+            .FirstOrDefaultAsync(r => r.Id == id, cancellationToken);
+
+        if (recipe.ApplicationUser.Id != User.Identity.Name)
+        {
+            throw new UnauthorizedAccessException("User doesn't own recipe.");
+        }
 
         _recipesDbContext.Recipes.Remove(recipe);
 
