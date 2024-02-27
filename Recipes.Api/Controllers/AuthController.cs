@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Recipes.Api.Models.Dtos;
 using Recipes.Api.Models.Requests;
 using Recipes.Core.Application.Auth;
-using Recipes.Core.Domain;
 
 namespace Recipes.Api.Controllers;
 

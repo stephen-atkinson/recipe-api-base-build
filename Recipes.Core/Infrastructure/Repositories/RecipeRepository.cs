@@ -8,24 +8,17 @@ namespace Recipes.Core.Infrastructure.Repositories;
 public class RecipeRepository : IRecipeRepository
 {
     private readonly IRecipesDbContext _recipesDbContext;
-    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public RecipeRepository(IRecipesDbContext recipesDbContext, IDateTimeProvider dateTimeProvider)
+    public RecipeRepository(IRecipesDbContext recipesDbContext)
     {
         _recipesDbContext = recipesDbContext;
-        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task<int> CreateAsync(Recipe recipe, CancellationToken cancellationToken)
     {
-        var utcNow = _dateTimeProvider.UtcNow;
+        var dbRecipe = new Recipe();
 
-        var dbRecipe = new Recipe
-        {
-            Created = utcNow
-        };
-
-        Map(recipe, dbRecipe, utcNow);
+        Map(recipe, dbRecipe);
 
         await _recipesDbContext.Recipes.AddAsync(dbRecipe, cancellationToken);
         await _recipesDbContext.SaveChangesAsync(cancellationToken);
@@ -45,7 +38,7 @@ public class RecipeRepository : IRecipeRepository
             throw new NullReferenceException($"No recipe found with id \"{recipe.Id}\".");
         }
 
-        Map(recipe, dbRecipe, _dateTimeProvider.UtcNow);
+        Map(recipe, dbRecipe);
 
         await _recipesDbContext.SaveChangesAsync(cancellationToken);
     }
@@ -94,14 +87,20 @@ public class RecipeRepository : IRecipeRepository
         return recipes;
     }
 
-    private static void Map(Recipe from, Recipe to, DateTime utcNow)
+    public async Task<bool> ExistsAsync(int id, CancellationToken cancellationToken)
+    {
+        var exists = await _recipesDbContext.Recipes.AnyAsync(r => r.Id == id, cancellationToken);
+
+        return exists;
+    }
+
+    private static void Map(Recipe from, Recipe to)
     {
         to.Course = from.Course;
         to.Diet = from.Diet;
         to.Name = from.Name;
         to.Instructions = from.Instructions;
         to.Difficulty = from.Difficulty;
-        to.LastUpdated = utcNow;
 
         to.Ingredients = from.Ingredients.Select(fi =>
             to.Ingredients.FirstOrDefault(i => i.ExternalId == fi.ExternalId) ?? new Ingredient

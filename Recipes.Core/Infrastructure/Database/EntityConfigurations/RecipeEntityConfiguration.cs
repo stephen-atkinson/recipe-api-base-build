@@ -12,6 +12,7 @@ public class RecipeEntityConfiguration : IEntityTypeConfiguration<Recipe>
         builder.HasKey(r => r.Id);
 
         builder.Property(r => r.Name).IsRequired();
+        builder.Property(r => r.UserId).IsRequired();
 
         builder.OwnsMany(r => r.Ingredients, t =>
         {
