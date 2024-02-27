@@ -81,6 +81,7 @@ public class RecipeRepository : IRecipeRepository
             .Where(r => criteria.DifficultyFrom == null || r.Difficulty >= criteria.DifficultyFrom)
             .Where(r => criteria.DifficultyTo == null || r.Difficulty <= criteria.DifficultyTo)
             .Where(r => criteria.UserId == null || r.UserId == criteria.UserId)
+            .OrderBy(r => r.Name)
             .Skip(criteria.Skip)
             .Take(criteria.Take)
             .ToArrayAsync(cancellationToken);
