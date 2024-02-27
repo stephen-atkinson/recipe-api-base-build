@@ -218,9 +218,6 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                     b.Property<int?>("Course")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
-
                     b.Property<int?>("Diet")
                         .HasColumnType("INTEGER");
 
@@ -228,10 +225,6 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Instructions")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("LastUpdated")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")

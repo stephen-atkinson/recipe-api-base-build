@@ -11,7 +11,7 @@ using Recipes.Core.Infrastructure.Database;
 namespace Recipes.Core.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(RecipesDbContext))]
-    [Migration("20240227182605_Initial")]
+    [Migration("20240227214712_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -220,9 +220,6 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                     b.Property<int?>("Course")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
-
                     b.Property<int?>("Diet")
                         .HasColumnType("INTEGER");
 
@@ -230,10 +227,6 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Instructions")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("LastUpdated")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
