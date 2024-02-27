@@ -313,6 +313,9 @@ namespace Recipes.Core.Infrastructure.Database.Migrations
                     b.Property<int?>("Diet")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Difficulty")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Instructions")
                         .IsRequired()
                         .HasColumnType("TEXT");
