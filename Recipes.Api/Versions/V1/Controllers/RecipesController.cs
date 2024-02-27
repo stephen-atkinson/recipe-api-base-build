@@ -1,4 +1,5 @@
 using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Recipes.Api.Models.Dtos;
 using Recipes.Api.Models.Requests.Recipes;
@@ -14,16 +15,30 @@ public class RecipesController : ControllerBase
 {
     private readonly IRecipeRepository _recipeRepository;
     private readonly IMapper _mapper;
+    private readonly IValidator<CreateOrUpdateRecipeRequest> _validator;
 
-    public RecipesController(IRecipeRepository recipeRepository, IMapper mapper)
+    public RecipesController(IRecipeRepository recipeRepository, IMapper mapper, IValidator<CreateOrUpdateRecipeRequest> validator)
     {
         _recipeRepository = recipeRepository;
         _mapper = mapper;
+        _validator = validator;
     }
     
     [HttpPost]
     public async Task<IActionResult> Create(CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
     {
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+
+        if (!validationResult.IsValid)
+        {
+            foreach (var error in validationResult.Errors)
+            {
+                ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+            }
+
+            return ValidationProblem(ModelState);
+        }
+        
         var recipe = RequestToRecipe(null, request);
 
         recipe.Id = await _recipeRepository.CreateAsync(recipe, CancellationToken.None);
@@ -39,6 +54,11 @@ public class RecipesController : ControllerBase
     public async Task<IActionResult> ReadSingle(int id, CancellationToken cancellationToken)
     {
         var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
+
+        if (recipe == null)
+        {
+            return NotFound();
+        }
 
         var recipeDto = _mapper.Map<RecipeDto>(recipe);
 
@@ -71,11 +91,28 @@ public class RecipesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
     {
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        
+        if (!validationResult.IsValid)
+        {
+            foreach (var error in validationResult.Errors)
+            {
+                ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+            }
+
+            return ValidationProblem(ModelState);
+        }
+        
         var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
+
+        if (recipe == null)
+        {
+            return NotFound();
+        }
         
         if (recipe.UserId != User.Identity.Name)
         {
-            throw new UnauthorizedAccessException("User doesn't own recipe.");
+            return Unauthorized();
         }
         
         recipe = RequestToRecipe(id, request);
@@ -92,9 +129,14 @@ public class RecipesController : ControllerBase
     {
         var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
         
+        if (recipe == null)
+        {
+            return NotFound();
+        }
+        
         if (recipe.UserId != User.Identity.Name)
         {
-            throw new UnauthorizedAccessException("User doesn't own recipe.");
+            return Unauthorized();
         }
 
         await _recipeRepository.DeleteAsync(id, CancellationToken.None);
@@ -106,6 +148,11 @@ public class RecipesController : ControllerBase
     public async Task<IActionResult> CreateOrUpdateRating(int id, CreateOrUpdateRecipeRatingRequest request, CancellationToken cancellationToken)
     {
         var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
+        
+        if (recipe == null)
+        {
+            return NotFound();
+        }
 
         var rating = recipe.Ratings.FirstOrDefault(r => r.UserId == User.Identity.Name);
 
