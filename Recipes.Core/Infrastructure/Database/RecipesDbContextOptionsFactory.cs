@@ -31,6 +31,6 @@ public class RecipesDbContextOptionsFactory : IRecipesDbContextOptionsFactory
 
         var dbPath = Path.Join(hostEnvironment.ContentRootPath, dbOptions.Value.DatabaseName);
 
-        builder.UseSqlite($"Data Source={dbPath}");
+        builder.UseSqlite($"Data Source={dbPath}", c => c.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
     }
 }
