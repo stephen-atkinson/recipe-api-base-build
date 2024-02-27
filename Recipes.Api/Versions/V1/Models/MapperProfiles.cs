@@ -1,8 +1,8 @@
 using AutoMapper;
-using Recipes.Api.Models.Dtos;
+using Recipes.Api.Versions.V1.Models.Dtos;
 using Recipes.Core.Domain;
 
-namespace Recipes.Api.Models;
+namespace Recipes.Api.Versions.V1.Models;
 
 public class MapperProfiles : Profile
 {

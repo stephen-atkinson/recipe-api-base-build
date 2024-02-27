@@ -23,5 +23,9 @@
     <ItemGroup>
       <ProjectReference Include="..\Recipes.Core\Recipes.Core.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Versions\V1\" />
+    </ItemGroup>
     
 </Project>

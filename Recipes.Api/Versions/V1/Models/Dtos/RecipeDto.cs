@@ -1,6 +1,6 @@
 using Recipes.Core.Domain;
 
-namespace Recipes.Api.Models.Dtos;
+namespace Recipes.Api.Versions.V1.Models.Dtos;
 
 public class RecipeDto
 {

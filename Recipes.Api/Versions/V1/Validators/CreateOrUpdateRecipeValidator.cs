@@ -1,7 +1,7 @@
 using FluentValidation;
-using Recipes.Api.Models.Requests.Recipes;
+using Recipes.Api.Versions.V1.Models.Requests.Recipes;
 
-namespace Recipes.Api.Validators;
+namespace Recipes.Api.Versions.V1.Validators;
 
 public class CreateOrUpdateRecipeValidator : AbstractValidator<CreateOrUpdateRecipeRequest>
 {

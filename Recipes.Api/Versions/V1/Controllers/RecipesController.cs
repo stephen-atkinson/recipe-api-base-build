@@ -1,16 +1,18 @@
+using Asp.Versioning;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Recipes.Api.Models.Dtos;
-using Recipes.Api.Models.Requests.Recipes;
+using Recipes.Api.Versions.V1.Models.Dtos;
+using Recipes.Api.Versions.V1.Models.Requests.Recipes;
 using Recipes.Core.Application.Contracts;
 using Recipes.Core.Application.Models;
 using Recipes.Core.Domain;
 
-namespace Recipes.Api.Controllers;
+namespace Recipes.Api.Versions.V1.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("v{version:apiVersion}/[controller]")]
+[ApiVersion(1)]
 public class RecipesController : ControllerBase
 {
     private readonly IRecipeRepository _recipeRepository;

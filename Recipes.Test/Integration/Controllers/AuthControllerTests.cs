@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Recipes.Api;
-using Recipes.Api.Models.Requests;
+using Recipes.Api.Versions.Neutral.Models.Requests;
 using Recipes.Core.Application;
 using Recipes.Core.Application.Models;
 using Recipes.Core.Infrastructure.Database;

@@ -1,0 +1,14 @@
+using Recipes.Core.Domain;
+
+namespace Recipes.Api.Versions.V2.Models.Requests.Recipes;
+
+public class GetRecipesRequest
+{
+    public int Page { get; set; } = 1;
+    public int PageSize { get; set; } = 20;
+    public Course? Course { get; set; }
+    public Diet? Diet { get; set; }
+    public int? DifficultyFrom { get; set; }
+    public int? DifficultyTo { get; set; }
+    public string? UserId { get; set; }
+}

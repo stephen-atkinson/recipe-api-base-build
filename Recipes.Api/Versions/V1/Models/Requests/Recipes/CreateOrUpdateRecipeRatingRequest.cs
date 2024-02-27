@@ -1,4 +1,4 @@
-namespace Recipes.Api.Models.Requests.Recipes;
+namespace Recipes.Api.Versions.V1.Models.Requests.Recipes;
 
 public class CreateOrUpdateRecipeRatingRequest
 {
