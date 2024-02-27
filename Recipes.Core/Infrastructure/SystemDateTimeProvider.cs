@@ -1,4 +1,5 @@
 using Recipes.Core.Application;
+using Recipes.Core.Application.Contracts;
 
 namespace Recipes.Core.Infrastructure;
 

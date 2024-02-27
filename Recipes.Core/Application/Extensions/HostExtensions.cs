@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Recipes.Core.Domain;
+using Recipes.Core.Application.Models;
 using Recipes.Core.Infrastructure.Database;
 
-namespace Recipes.Core.Application;
+namespace Recipes.Core.Application.Extensions;
 
 public static class HostExtensions
 {
@@ -25,7 +25,7 @@ public static class HostExtensions
     {
         await using var scope = host.Services.CreateAsyncScope();
         
-        var aspNetUserManager = scope.ServiceProvider.GetRequiredService<AspNetUserManager<ApplicationUser>>();
+        var aspNetUserManager = scope.ServiceProvider.GetRequiredService<AspNetUserManager<IdentityUser>>();
         
         var userOptions = scope.ServiceProvider.GetRequiredService<IOptions<UserSettings>>();
 
@@ -38,7 +38,7 @@ public static class HostExtensions
                 continue;
             }
             
-            user = new ApplicationUser { UserName = defaultUser.Username };
+            user = new IdentityUser { UserName = defaultUser.Username };
 
             var result = await aspNetUserManager.CreateAsync(user, defaultUser.Password);
             

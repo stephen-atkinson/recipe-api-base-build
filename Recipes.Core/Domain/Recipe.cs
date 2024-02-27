@@ -11,6 +11,6 @@ public class Recipe
     public DateTime Created { get; set; }
     public DateTime LastUpdated { get; set; }
     public ICollection<Ingredient> Ingredients { get; set; } = null!;
-    public ApplicationUser ApplicationUser { get; set; } = null!;
-    public ICollection<Group> Groups { get; set; } = null!;
+    public ICollection<Rating> Ratings { get; set; } = null!;
+    public string UserId { get; set; } = null!;
 }

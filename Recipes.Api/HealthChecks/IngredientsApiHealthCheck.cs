@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Recipes.Core.Application;
+using Recipes.Core.Application.Contracts;
 
 namespace Recipes.Api.HealthChecks;
 

@@ -1,15 +1,12 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Identity;
-using Recipes.Core.Application;
-using Recipes.Core.Domain;
+using Recipes.Core.Application.Contracts;
 using Recipes.Core.Infrastructure.Database;
 using Recipes.Core.Infrastructure.Ingredients;
 
-namespace Recipes.Core.Infrastructure;
+namespace Recipes.Core.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtensions
 {
@@ -32,8 +29,8 @@ public static class ServiceCollectionExtensions
         
         serviceCollection.AddScoped<IRecipesDbContext>(sp => sp.GetRequiredService<RecipesDbContext>());
 
-        serviceCollection.AddIdentityCore<ApplicationUser>()
-            .AddUserManager<AspNetUserManager<ApplicationUser>>()
+        serviceCollection.AddIdentityCore<IdentityUser>()
+            .AddUserManager<AspNetUserManager<IdentityUser>>()
             .AddSignInManager()
             .AddEntityFrameworkStores<RecipesDbContext>();
 

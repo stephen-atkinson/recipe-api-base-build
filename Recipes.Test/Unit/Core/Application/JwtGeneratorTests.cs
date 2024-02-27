@@ -2,10 +2,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using FluentAssertions;
 using FluentAssertions.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Moq;
 using Recipes.Core.Application;
 using Recipes.Core.Application.Auth;
+using Recipes.Core.Application.Contracts;
 using Recipes.Core.Domain;
 
 namespace Recipes.Test.Unit.Core.Application;
@@ -18,7 +20,7 @@ public class JwtGeneratorTests
     private Mock<IOptionsMonitor<JwtSettings>> _mockJwtOptions;
     private Mock<IDateTimeProvider> _mockDateTimeProvider;
     
-    private ApplicationUser _applicationUser;
+    private IdentityUser _user;
     private JwtSettings _jwtSettings;
     private DateTime _utcNow;
     private DateTime _validTo;
@@ -33,7 +35,7 @@ public class JwtGeneratorTests
         _mockJwtOptions = _mockRepository.Create<IOptionsMonitor<JwtSettings>>();
         _mockDateTimeProvider = _mockRepository.Create<IDateTimeProvider>();
 
-        _applicationUser = new ApplicationUser { Id = "02381b52-371e-4577-9dde-912296904466" };
+        _user = new IdentityUser { Id = "02381b52-371e-4577-9dde-912296904466" };
         
         _jwtSettings = new JwtSettings
         {
@@ -61,12 +63,12 @@ public class JwtGeneratorTests
         
         // Act
         
-        var jwt = _jwtGenerator.Create(_applicationUser);
+        var jwt = _jwtGenerator.Create(_user);
         var jwtSecurityToken = jwtSecurityTokenHandler.ReadJwtToken(jwt);
 
         // Assert
 
-        jwtSecurityToken.Claims.Should().Contain(c => c.Value == _applicationUser.Id);
+        jwtSecurityToken.Claims.Should().Contain(c => c.Value == _user.Id);
         jwtSecurityToken.Issuer.Should().Be(_jwtSettings.Issuer);
         jwtSecurityToken.Audiences.Should().ContainSingle(_jwtSettings.Audience);
         jwtSecurityToken.IssuedAt.Should().Be(_utcNow);

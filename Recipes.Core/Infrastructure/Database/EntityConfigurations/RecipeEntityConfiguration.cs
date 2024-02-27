@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Recipes.Core.Domain;
@@ -12,6 +13,14 @@ public class RecipeEntityConfiguration : IEntityTypeConfiguration<Recipe>
 
         builder.Property(r => r.Name).IsRequired();
 
-        builder.HasMany(r => r.Ingredients).WithOne(i => i.Recipe);
+        builder.OwnsMany(r => r.Ingredients, t =>
+        {
+            t.HasKey($"{nameof(Recipe)}{nameof(Recipe.Id)}", nameof(Ingredient.ExternalId));
+        });
+        
+        builder.OwnsMany(r => r.Ratings, t =>
+        {
+            t.HasKey($"{nameof(Recipe)}{nameof(Recipe.Id)}", nameof(Rating.UserId));
+        });
     }
 }
