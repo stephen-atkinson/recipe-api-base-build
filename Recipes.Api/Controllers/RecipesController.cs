@@ -24,7 +24,7 @@ public class RecipesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
     {
-        var recipe = RequestToRecipe(null, request);
+        var recipe = MapRequestToRecipe(null, request);
 
         recipe.Id = await _recipeRepository.CreateAsync(recipe, CancellationToken.None);
 
@@ -78,7 +78,7 @@ public class RecipesController : ControllerBase
             throw new UnauthorizedAccessException("User doesn't own recipe.");
         }
         
-        recipe = RequestToRecipe(id, request);
+        recipe = MapRequestToRecipe(recipe, request);
 
         await _recipeRepository.UpdateAsync(recipe, CancellationToken.None);
         
@@ -121,19 +121,21 @@ public class RecipesController : ControllerBase
         return NoContent();
     }
 
-    private Recipe RequestToRecipe(int? id, CreateOrUpdateRecipeRequest request)
+    private Recipe MapRequestToRecipe(Recipe? recipe, CreateOrUpdateRecipeRequest request)
     {
-        var recipe = new Recipe
+        recipe ??= new Recipe
         {
-            Id = id ?? 0,
-            Course = request.Course,
-            Diet = request.Diet,
-            Name = request.Name,
-            Instructions = request.Instructions,
-            Difficulty = request.Difficulty,
-            UserId = User.Identity.Name,
+            Ingredients = new List<Ingredient>(),
+            Ratings = new List<Rating>(),
+            UserId = User.Identity.Name
         };
 
+        recipe.Course = request.Course;
+        recipe.Diet = request.Diet;
+        recipe.Name = request.Name;
+        recipe.Instructions = request.Instructions;
+        recipe.Difficulty = request.Difficulty;
+        
         return recipe;
     }
 }
