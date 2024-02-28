@@ -19,6 +19,7 @@ builder.Services.ConfigureOptions<RouteConfigOptions>();
 builder.Services.ConfigureOptions<JsonConfigOptions>();
 
 builder.Services.AddSwaggerGen();
+builder.Services.ConfigureOptions<MvcConfigOptions>();
 builder.Services.ConfigureOptions<SwaggerConfigOptions>();
 builder.Services.ConfigureOptions<SwaggerUiConfigOptions>();
 
