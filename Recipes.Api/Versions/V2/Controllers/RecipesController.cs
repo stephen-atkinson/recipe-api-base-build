@@ -20,14 +20,15 @@ public class RecipesController : ControllerBase
     private readonly IValidator<CreateOrUpdateRecipeRequest> _validator;
     private readonly IIngredientsApi _ingredientsApi;
 
-    public RecipesController(IRecipeRepository recipeRepository, IMapper mapper, IValidator<CreateOrUpdateRecipeRequest> validator, IIngredientsApi ingredientsApi)
+    public RecipesController(IRecipeRepository recipeRepository, IMapper mapper,
+        IValidator<CreateOrUpdateRecipeRequest> validator, IIngredientsApi ingredientsApi)
     {
         _recipeRepository = recipeRepository;
         _mapper = mapper;
         _validator = validator;
         _ingredientsApi = ingredientsApi;
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
     {
@@ -42,13 +43,13 @@ public class RecipesController : ControllerBase
 
             return ValidationProblem(ModelState);
         }
-        
-        var recipe = await RequestToRecipeAsync(null, request, cancellationToken);
+
+        var recipe = await MapRequestToRecipeAsync(null, request, cancellationToken);
 
         recipe.Id = await _recipeRepository.CreateAsync(recipe, CancellationToken.None);
 
         var dto = _mapper.Map<RecipeDto>(recipe);
-        
+
         var url = Url.Action("ReadSingle", new { recipe.Id });
 
         return Created(url!, dto);
@@ -70,9 +71,9 @@ public class RecipesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Search([FromQuery]GetRecipesRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Search([FromQuery] GetRecipesRequest request, CancellationToken cancellationToken)
     {
-        var skip = (request.Page - 1)  * request.PageSize;
+        var skip = (request.Page - 1) * request.PageSize;
 
         var searchCriteria = new GetRecipesCriteria
         {
@@ -93,10 +94,11 @@ public class RecipesController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(int id, CreateOrUpdateRecipeRequest request,
+        CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
-        
+
         if (!validationResult.IsValid)
         {
             foreach (var error in validationResult.Errors)
@@ -106,25 +108,25 @@ public class RecipesController : ControllerBase
 
             return ValidationProblem(ModelState);
         }
-        
+
         var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
 
         if (recipe == null)
         {
             return NotFound();
         }
-        
+
         if (recipe.UserId != User.Identity.Name)
         {
             return Unauthorized();
         }
-        
-        recipe = await RequestToRecipeAsync(id, request, cancellationToken);
+
+        recipe = await MapRequestToRecipeAsync(recipe, request, cancellationToken);
 
         await _recipeRepository.UpdateAsync(recipe, CancellationToken.None);
-        
+
         var dto = _mapper.Map<RecipeDto>(recipe);
-        
+
         return Ok(dto);
     }
 
@@ -132,12 +134,12 @@ public class RecipesController : ControllerBase
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
-        
+
         if (recipe == null)
         {
             return NotFound();
         }
-        
+
         if (recipe.UserId != User.Identity.Name)
         {
             return Unauthorized();
@@ -149,10 +151,11 @@ public class RecipesController : ControllerBase
     }
 
     [HttpPatch("{id:int}/rating")]
-    public async Task<IActionResult> CreateOrUpdateRating(int id, CreateOrUpdateRecipeRatingRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateOrUpdateRating(int id, CreateOrUpdateRecipeRatingRequest request,
+        CancellationToken cancellationToken)
     {
         var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
-        
+
         if (recipe == null)
         {
             return NotFound();
@@ -172,30 +175,35 @@ public class RecipesController : ControllerBase
         return NoContent();
     }
 
-    private async Task<Recipe> RequestToRecipeAsync(int? id, CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
+    private async Task<Recipe> MapRequestToRecipeAsync(Recipe? recipe, CreateOrUpdateRecipeRequest request,
+        CancellationToken cancellationToken)
     {
         var batchGetIngredientsRequest = new BatchGetIngredientsRequest { Ids = request.IngredientIds };
-        
-        var ingredients = await _ingredientsApi.BatchGet(batchGetIngredientsRequest, cancellationToken);
-        
-        var recipe = new Recipe
+
+        var ingredients = request.IngredientIds.Any()
+            ? await _ingredientsApi.BatchGet(batchGetIngredientsRequest, cancellationToken)
+            : new List<ExternalIngredient>();
+
+        recipe ??= new Recipe
         {
-            Id = id ?? 0,
-            Course = request.Course,
-            Diet = request.Diet,
-            Name = request.Name,
-            Instructions = request.Instructions,
-            Difficulty = request.Difficulty,
-            UserId = User.Identity.Name,
-            Ingredients = ingredients.Select(i => new Ingredient
-            {
-                Name = i.SupplierFriendlyName,
-                Category = i.Category,
-                Description = i.Description,
-                ExternalId = i.Id,
-                SupplierName = i.SupplierFriendlyName
-            }).ToList(),
+            Ingredients = new List<Ingredient>(),
+            Ratings = new List<Rating>(),
+            UserId = User.Identity.Name
         };
+
+        recipe.Course = request.Course;
+        recipe.Diet = request.Diet;
+        recipe.Name = request.Name;
+        recipe.Instructions = request.Instructions;
+        recipe.Difficulty = request.Difficulty;
+        recipe.Ingredients = ingredients.Select(i => new Ingredient
+        {
+            Name = i.SupplierFriendlyName,
+            Category = i.Category,
+            Description = i.Description,
+            ExternalId = i.Id,
+            SupplierName = i.SupplierFriendlyName
+        }).ToList();
 
         return recipe;
     }
