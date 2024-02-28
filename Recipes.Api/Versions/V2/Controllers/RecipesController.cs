@@ -2,7 +2,7 @@ using Asp.Versioning;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Recipes.Api.Versions.V1.Models.Requests.Recipes;
+using Recipes.Api.Versions.V2.Models.Requests.Recipes;
 using Recipes.Api.Versions.V2.Models.Dtos;
 using Recipes.Core.Application.Contracts;
 using Recipes.Core.Application.Models;
@@ -18,12 +18,14 @@ public class RecipesController : ControllerBase
     private readonly IRecipeRepository _recipeRepository;
     private readonly IMapper _mapper;
     private readonly IValidator<CreateOrUpdateRecipeRequest> _validator;
+    private readonly IIngredientsApi _ingredientsApi;
 
-    public RecipesController(IRecipeRepository recipeRepository, IMapper mapper, IValidator<CreateOrUpdateRecipeRequest> validator)
+    public RecipesController(IRecipeRepository recipeRepository, IMapper mapper, IValidator<CreateOrUpdateRecipeRequest> validator, IIngredientsApi ingredientsApi)
     {
         _recipeRepository = recipeRepository;
         _mapper = mapper;
         _validator = validator;
+        _ingredientsApi = ingredientsApi;
     }
     
     [HttpPost]
@@ -41,7 +43,7 @@ public class RecipesController : ControllerBase
             return ValidationProblem(ModelState);
         }
         
-        var recipe = RequestToRecipe(null, request);
+        var recipe = await RequestToRecipeAsync(null, request, cancellationToken);
 
         recipe.Id = await _recipeRepository.CreateAsync(recipe, CancellationToken.None);
 
@@ -117,7 +119,7 @@ public class RecipesController : ControllerBase
             return Unauthorized();
         }
         
-        recipe = RequestToRecipe(id, request);
+        recipe = await RequestToRecipeAsync(id, request, cancellationToken);
 
         await _recipeRepository.UpdateAsync(recipe, CancellationToken.None);
         
@@ -170,8 +172,12 @@ public class RecipesController : ControllerBase
         return NoContent();
     }
 
-    private Recipe RequestToRecipe(int? id, CreateOrUpdateRecipeRequest request)
+    private async Task<Recipe> RequestToRecipeAsync(int? id, CreateOrUpdateRecipeRequest request, CancellationToken cancellationToken)
     {
+        var batchGetIngredientsRequest = new BatchGetIngredientsRequest { Ids = request.IngredientIds };
+        
+        var ingredients = await _ingredientsApi.BatchGet(batchGetIngredientsRequest, cancellationToken);
+        
         var recipe = new Recipe
         {
             Id = id ?? 0,
@@ -181,6 +187,14 @@ public class RecipesController : ControllerBase
             Instructions = request.Instructions,
             Difficulty = request.Difficulty,
             UserId = User.Identity.Name,
+            Ingredients = ingredients.Select(i => new Ingredient
+            {
+                Name = i.SupplierFriendlyName,
+                Category = i.Category,
+                Description = i.Description,
+                ExternalId = i.Id,
+                SupplierName = i.SupplierFriendlyName
+            }).ToList(),
         };
 
         return recipe;

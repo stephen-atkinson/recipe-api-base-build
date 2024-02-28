@@ -9,4 +9,5 @@ public class CreateOrUpdateRecipeRequest
     public int Difficulty { get; set; }
     public Diet? Diet { get; set; }
     public Course? Course { get; set; }
+    public IReadOnlyCollection<string> IngredientIds { get; set; }
 }

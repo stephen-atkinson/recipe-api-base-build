@@ -12,4 +12,5 @@ public class RecipeDto
     public Diet? Diet { get; set; }
     public Course? Course { get; set; }
     public string UserId { get; set; } = null!;
+    public IReadOnlyCollection<IngredientDto> Ingredients { get; set; }
 }
