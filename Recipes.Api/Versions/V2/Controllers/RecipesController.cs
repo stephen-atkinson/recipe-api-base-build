@@ -88,7 +88,12 @@ public class RecipesController : ControllerBase
 
         var price = ingredients.Sum(i => i.Cost);
 
-        return Ok(price);
+        var priceDto = new PriceDto
+        {
+            Value = price
+        };
+
+    return Ok(priceDto);
     }
 
     [HttpGet]
