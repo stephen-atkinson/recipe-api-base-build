@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.NetworkInformation;
 using System.Text.Json;
@@ -54,7 +55,7 @@ public class IngredientsApi : IIngredientsApi
 
         var requestMessage = new HttpRequestMessage(method, uri);
         
-        requestMessage.Headers.Add("Accept", "application/json; charset=utf-8; x-api-version=2.0");
+        requestMessage.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json; x-api-version=2.0"));
 
         if (body != null)
         {
