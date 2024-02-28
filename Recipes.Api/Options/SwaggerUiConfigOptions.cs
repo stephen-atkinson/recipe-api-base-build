@@ -16,7 +16,7 @@ public class SwaggerUiConfigOptions : IConfigureOptions<SwaggerUIOptions>
     public void Configure(SwaggerUIOptions options)
     {
         // build a swagger endpoint for each discovered API version
-        foreach (var description in _apiDescriptionGroupCollectionProvider.ApiDescriptionGroups.Items)
+        foreach (var description in _apiDescriptionGroupCollectionProvider.ApiDescriptionGroups.Items.Reverse())
         {
             var url = $"/swagger/{description.GroupName}/swagger.json";
             var name = description.GroupName!.ToUpperInvariant();

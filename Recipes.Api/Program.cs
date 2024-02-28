@@ -14,6 +14,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.ConfigureOptions<JwtConfigOptions>();
 
 builder.Services.AddControllers();
+builder.Services.ConfigureOptions<MvcConfigOptions>();
 builder.Services.ConfigureOptions<RouteConfigOptions>();
 builder.Services.ConfigureOptions<JsonConfigOptions>();
 
