@@ -19,14 +19,16 @@ public class RecipesController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IValidator<CreateOrUpdateRecipeRequest> _validator;
     private readonly IIngredientsApi _ingredientsApi;
+    private readonly IIngredientsService _ingredientsService;
 
     public RecipesController(IRecipeRepository recipeRepository, IMapper mapper,
-        IValidator<CreateOrUpdateRecipeRequest> validator, IIngredientsApi ingredientsApi)
+        IValidator<CreateOrUpdateRecipeRequest> validator, IIngredientsApi ingredientsApi, IIngredientsService ingredientsService)
     {
         _recipeRepository = recipeRepository;
         _mapper = mapper;
         _validator = validator;
         _ingredientsApi = ingredientsApi;
+        _ingredientsService = ingredientsService;
     }
 
     [HttpPost]
@@ -68,6 +70,25 @@ public class RecipesController : ControllerBase
         var recipeDto = _mapper.Map<RecipeDto>(recipe);
 
         return Ok(recipeDto);
+    }
+
+    [HttpGet("{id:int}/price")]
+    public async Task<IActionResult> GetPrice(int id, CancellationToken cancellationToken)
+    {
+        var recipe = await _recipeRepository.GetAsync(id, cancellationToken);
+
+        if (recipe == null)
+        {
+            return NotFound();
+        }
+
+        var ingredientIds = recipe.Ingredients.Select(i => i.ExternalId).ToArray();
+
+        var ingredients = await _ingredientsService.BatchGet(ingredientIds, cancellationToken);
+
+        var price = ingredients.Sum(i => i.Cost);
+
+        return Ok(price);
     }
 
     [HttpGet]
