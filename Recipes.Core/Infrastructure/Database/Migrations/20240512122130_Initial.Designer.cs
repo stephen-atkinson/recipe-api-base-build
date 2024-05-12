@@ -11,13 +11,14 @@ using Recipes.Core.Infrastructure.Database;
 namespace Recipes.Core.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(RecipesDbContext))]
-    [Migration("20240227214712_Initial")]
+    [Migration("20240512122130_Initial")]
     partial class Initial
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.26");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.4");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
