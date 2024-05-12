@@ -1,6 +1,5 @@
 using System.Net.NetworkInformation;
 using Microsoft.Extensions.Options;
-using Recipes.Core.Application;
 using Recipes.Core.Application.Contracts;
 
 namespace Recipes.Core.Infrastructure.Ingredients;
@@ -21,8 +20,7 @@ public class IngredientsApi : IIngredientsApi
         var host = new Uri(_options.Value.BaseUrl).Host;
         
         using var ping = new Ping();
-
-        // Ping cancellation added in .NET 8.
+        
         var replyTask = await ping.SendPingAsync(host);
 
         return replyTask.Status == IPStatus.Success;
