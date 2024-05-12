@@ -29,13 +29,13 @@ public class AuthControllerTests
         
         _mockAspNetUserManager = new Mock<AspNetUserManager<IdentityUser>>(
             Mock.Of<IUserStore<IdentityUser>>(), 
-            null, null, null, null, null, null, null, null);
+            null!, null!, null!, null!, null!, null!, null!, null!);
         
         _mockSignInManager = new Mock<SignInManager<IdentityUser>>(
             _mockAspNetUserManager.Object,
             Mock.Of<IHttpContextAccessor>(),
             Mock.Of<IUserClaimsPrincipalFactory<IdentityUser>>(),
-            null, null, null, null);
+            null!, null!, null!, null!);
 
         _authController = new AuthController(
             _mockAccessTokenGenerator.Object,
